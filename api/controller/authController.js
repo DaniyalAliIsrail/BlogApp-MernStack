@@ -9,10 +9,11 @@ const signup = async (req,res,next) => {
    return next(errorHandler(400, 'All field are required'));
   }
   try{
-    const checkEmail = User.findOne({email});
-    if(checkEmail){
-       return next(errorHandler(400,"Email is already Exsist"))
-    }
+    // const checkEmail = User.findOne({email});
+    // console.log(checkEmail);
+    // if(checkEmail){
+    //    return next(errorHandler(400,"Email is already Exsist"))
+    // }
     const hashPassword = bcryptjs.hashSync(password,10)
     const user = new User({
       username: username,
