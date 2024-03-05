@@ -1,7 +1,7 @@
 import { Footer } from "flowbite-react";
 import React from "react";
 import { Link } from "react-router-dom";
-import {BsFacebook} from 'react-icons/bs';
+import {BsFacebook, BsGithub, BsInstagram} from 'react-icons/bs';
 // import LOGO from "../assets/logp.png"
 
 const Myfooter = () => {
@@ -68,9 +68,8 @@ const Myfooter = () => {
         
         <div className="flex gap-6 sm:mt-0 mt-4 sm:justify-center">
             <Footer.Icon href="#" icon={BsFacebook}/>
-            <Footer.Icon href="#" icon={BsFacebook}/>
-            <Footer.Icon href="#" icon={BsFacebook}/>
-            <Footer.Icon href="#" icon={BsFacebook}/>
+            <Footer.Icon href="#" icon={BsInstagram}/>
+            <Footer.Icon href="#" icon={BsGithub}/>
         
         </div>
       </div>
