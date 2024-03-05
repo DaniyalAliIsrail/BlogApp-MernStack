@@ -132,7 +132,6 @@ const Signup = () => {
   const navigate = useNavigate()
 
   const handleChange = (e) => {
-    // const { id, value } = e.target;
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
@@ -182,7 +181,7 @@ const Signup = () => {
           </Link>
           <p className="mt-5">
             Lorem ipsum dolor sit amet nsectetur adipisicing elit Lorem, ipsum
-            dolor..
+            dolor...
           </p>
         </div>
         <div className="flex-1">
