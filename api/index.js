@@ -9,9 +9,14 @@ dotenv.config();
 const app = express(); 
 const PORT = 3000;
 
-app.use(express.json())
+
+app.use(express.json()) // client say any wala json data automatic parse krta hay or javascript obj may convert krta hay
+
+// middleware for user routes
 app.use('/api/user',userRoutes)
+ // middleware for auth routes
 app.use('/api/auth',authRoutes)
+// error handling middleware
 app.use((err,req,res,next)=>{
     const statuscode = err.statuscode || 500;
     const message = err.message || 'internal server Error';

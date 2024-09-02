@@ -129,6 +129,8 @@ const Signup = () => {
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  console.log(loading);
+  
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -154,10 +156,12 @@ const Signup = () => {
       });
       const data = await res.json();
       console.log(data);
+      setLoading(false);
+      
       if (data.success === false) {
         return setErrorMessage(data.message);
       }
-      setLoading(false);
+      
       setErrorMessage(null); 
       setFormData({ username: "", email: "", password: "" }); // Clear input fields
       if(res.ok){
@@ -166,6 +170,8 @@ const Signup = () => {
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
+      setFormData({ username: "", email: "", password: "" }); // Clear input fields
+
     }
   };
 
@@ -226,7 +232,7 @@ const Signup = () => {
               {loading ? (
                 <>
                   <Spinner size="sm" />
-                  <span> loading... </span>
+                  <span className="pl-3" > loading... </span>
                 </>
               ) : (
                 "Sign Up"

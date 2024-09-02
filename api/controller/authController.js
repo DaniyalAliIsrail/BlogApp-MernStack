@@ -8,6 +8,7 @@ const signup = async (req,res,next) => {
   if (!username || !email || !password) {
    return next(errorHandler(400, 'All field are required'));
   }
+  
   try{
    
     const hashPassword = bcryptjs.hashSync(password,10)
@@ -22,6 +23,7 @@ const signup = async (req,res,next) => {
       user:newUser,
     })
   }catch(error){ 
+    //next(error) is a middlewear to check error
     next(error); 
   }
 };
