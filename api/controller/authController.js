@@ -3,7 +3,7 @@ import bcryptjs from "bcryptjs";
 import errorHandler from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
- const signup = async (req, res, next) => {
+const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
     return next(errorHandler(400, "All field are required"));
@@ -28,13 +28,14 @@ import jwt from "jsonwebtoken";
 };
 
 const signin = async (req, res, next) => {
-
   const { email, password } = req.body;
   if (!email || !password || email === "" || password === "") {
     return next(errorHandler(400, "All field are required"));
   }
 
   try {
+    //     const validUser = await User.findOne({ email }).select('-password');
+    // Is approach se, jab aap database se user data fetch karte ho, tabhi password field ko exclude kar dete ho. Iske baad aapko manually password ko remove karne ki zaroorat nahi padti.
     const validUser = await User.findOne({ email });
     if (!validUser) {
       return next(errorHandler(404, "user not found"));
@@ -45,15 +46,16 @@ const signin = async (req, res, next) => {
     }
 
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
-    res.status(200).cookie('access_token',token,{
-      httpOnly: true
-    }).json(validUser)
-
+    const { password:pass, ...userWithoutPassword } = validUser._doc;
+    res
+      .status(200)
+      .cookie("access_token", token, {
+        httpOnly: true,
+      })
+      .json(userWithoutPassword);
   } catch (error) {
     return next(error);
   }
 };
 
-
-
-export {signup,signin};
+export { signup, signin };
