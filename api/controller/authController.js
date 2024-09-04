@@ -53,6 +53,7 @@ const signin = async (req, res, next) => {
         httpOnly: true,
       })
       .json(userWithoutPassword);
+      
   } catch (error) {
     return next(error);
   }
