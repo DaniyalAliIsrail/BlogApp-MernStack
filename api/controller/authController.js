@@ -29,6 +29,8 @@ const signup = async (req, res, next) => {
 };
 
 const signin = async (req, res, next) => {
+  
+  
   const { email, password } = req.body;
   if (!email || !password || email === "" || password === "") {
     return next(errorHandler(400, "All field are required"));
@@ -60,7 +62,7 @@ const signin = async (req, res, next) => {
 };
 
 // const google = async (req, res, next) => {
-//   // console.log(req.body); 
+//   // console.log(req.body);
 //   const { name, email, googlePhotoUrl } = req.body;
 //   try {
 //     const user = await findOne({ email });
@@ -101,46 +103,54 @@ const signin = async (req, res, next) => {
 // };
 
 const google = async (req, res, next) => {
-  const { name, email ,googlePhotoUrl} = req.body;
+  console.log(req.body);
+  
+  const { name, email, googlePhotoUrl } = req.body;
+
   try {
-    const user = await User.findOne({ email });  
-
+    const user = await User.findOne({ email });
     if (user) {
+      console.log("run ifffffff part");
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-      const { password, ...userWithoutPassword } = user._doc;  // Corrected
-
+      const { password, ...userWithoutPassword } = user._doc; // Corrected
       res
         .status(200)
         .cookie("access_token", token, {
           httpOnly: true,
         })
-        .json(userWithoutPassword);  
-
+        .json(userWithoutPassword);
     } else {
+      console.log("run else else part");
+
       const genratedPassword =
         Math.random().toString(36).slice(-8) +
         Math.random().toString(36).slice(-8);
       const hashPassword = bcryptjs.hashSync(genratedPassword, 10);
       const newUser = new User({
-        username: name.toLowerCase().split(" ").join("").slice(-4) + Math.random().toString(9).slice(-4),  
+        username:
+          name.toLowerCase().split(" ").join("") +
+          Math.random().toString(9).slice(-4),
         email,
         password: hashPassword,
-        profilepicture: googlePhotoUrl,
+        profilePicture: googlePhotoUrl,
       });
+      
+      console.log(newUser);
+      
       await newUser.save();
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
-      const { password, ...userWithoutPassword } = newUser._doc;  
+      const { password, ...userWithoutPassword } = newUser._doc;
       res
         .status(200)
         .cookie("access_token", token, {
           httpOnly: true,
         })
-        .json(userWithoutPassword);  
+        .json(userWithoutPassword);
     }
   } catch (error) {
+    console.error("Error in Google Sign-in:", error);
     next(error);
   }
 };
-
 
 export { signup, signin, google };
