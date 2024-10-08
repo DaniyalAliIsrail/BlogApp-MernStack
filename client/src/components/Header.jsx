@@ -11,12 +11,16 @@ import {
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
-import { FaMoon } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { FaMoon, FaSun } from "react-icons/fa";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleTheme } from "../redux/theme/themeSlice";
+
 const Header = () => {
   const path = useLocation().pathname;
+  const disatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
-  console.log(currentUser);
+  const { theme } = useSelector((state) => state.theme);
+  // console.log(currentUser.profilePicture);
 
   return (
     <Navbar className="border-b-2">
@@ -44,8 +48,13 @@ const Header = () => {
       </Button>
 
       <div className="flex gap-2 md:order-2 items-center">
-        <Button className="w-12 h-10 hidden sm:inline" color="gray" pill>
-          <FaMoon />
+        <Button
+          className="w-12 h-10 hidden sm:inline"
+          color="gray"
+          pill
+          onClick={() => disatch(toggleTheme())}
+        >
+          {theme === "light" ? <FaMoon /> : <FaSun />}
         </Button>
 
         {currentUser ? (
@@ -53,7 +62,14 @@ const Header = () => {
             arrowIcon={false}
             inline
             label={
-              <Avatar alt="user" img={currentUser.profilePicture} rounded />
+              <Avatar
+                alt="user"
+                img={
+                  currentUser.profilePicture ||
+                  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                }
+                rounded
+              />
             }
           >
             <DropdownHeader>
