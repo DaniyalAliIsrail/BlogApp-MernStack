@@ -1,4 +1,4 @@
-import { Alert, Button, TextInput } from "flowbite-react";
+import { Alert, Button, Modal, TextInput } from "flowbite-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -10,10 +10,15 @@ import {
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 import {
   updateStart,
   updateSuccess,
   updateFailure,
+  deleteStart,
+  deleteFailure,
+  deleteSuccess,
+  signOutSuccess,
 } from "../redux/user/userSlice";
 
 const DashProfile = () => {
@@ -28,8 +33,47 @@ const DashProfile = () => {
     useState(false);
   const [updateuserSuccess, setupdateuserSuccess] = useState(null);
   const [updateUserError, setupdateUserError] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
   const filePickerRef = useRef();
   const dispatch = useDispatch();
+
+  const handleDel = async () => {
+    setOpenModal(false);
+    try {
+      dispatch(deleteStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(deleteFailure(data.message));
+      } else {
+        dispatch(deleteSuccess(data));
+      }
+    } catch (error) {
+      dispatch(updateFailure(error.message));
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signOutSuccess());
+        // console.log("Signout Success")
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -48,18 +92,17 @@ const DashProfile = () => {
   useEffect(() => {
     if (updateUserError) {
       const timer = setTimeout(() => {
-        setupdateUserError(null); 
-      }, 4000); 
+        setupdateUserError(null);
+      }, 4000);
       return () => clearTimeout(timer);
     }
     if (updateuserSuccess) {
       const timer = setTimeout(() => {
-       setupdateuserSuccess(null)
-      }, 3000); 
+        setupdateuserSuccess(null);
+      }, 3000);
       return () => clearTimeout(timer);
     }
-    
-  }, [updateUserError,updateuserSuccess]);
+  }, [updateUserError, updateuserSuccess]);
 
   useEffect(() => {
     if (imageFile) {
@@ -68,7 +111,6 @@ const DashProfile = () => {
   }, [imageFile]);
 
   const uploadImage = async () => {
-
     setImageFileUploading100percent(true); // Set uploading state to true
     setImageFileUploadError(null);
 
@@ -109,7 +151,7 @@ const DashProfile = () => {
 
     // Check if image is still uploading
     if (imageFileUploading100percent) {
-      console.log(imageFileUploading100percent)
+      console.log(imageFileUploading100percent);
       setupdateUserError("Please wait while the image is uploading...");
       return;
     }
@@ -118,7 +160,6 @@ const DashProfile = () => {
       console.log("Form data is empty");
       return;
     }
-
 
     try {
       dispatch(updateStart());
@@ -228,12 +269,44 @@ const DashProfile = () => {
           Update
         </Button>
       </form>
+
       <div className="flex justify-between mt-5">
-        <span className="text-red-800">Delete Account</span>
-        <span className="text-red-800">Sign Out</span>
+        <span onClick={() => setOpenModal(true)} className="text-red-800">
+          Delete Account
+        </span>
+        <span onClick={handleSignOut} className="text-red-800">
+          Sign Out
+        </span>
       </div>
+
       {updateuserSuccess && <Alert color="success">{updateuserSuccess}</Alert>}
       {updateUserError && <Alert color="failure">{updateUserError}</Alert>}
+
+      <Modal
+        show={openModal}
+        size="md"
+        onClose={() => setOpenModal(false)}
+        popup
+        className="z-[200]"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete this Account
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button onClick={handleDel} color="failure">
+                Delete
+              </Button>
+              <Button onClick={() => setOpenModal(false)} color="gray">
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
