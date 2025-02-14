@@ -11,6 +11,7 @@ export const verifyToken = (req,res,next)=>{
         if(error){
             return next(errorHandler(401,'Unauthorized '))
         }
+        //jo token banaty wqt hm paylaod data bhjty hay wo yaha mlta hay may nay userId or isAdmin ye bhja hay
         req.user = user;
         console.log("req_User",req.user)
         next();

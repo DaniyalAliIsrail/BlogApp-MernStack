@@ -4,9 +4,9 @@ import errorHandler from "../utils/error.js";
 const create = async (req, res, next) => {
   // console.log("daniya",req.user.id);
   const { title, content,category,image } = req.body;
-  const {id} = req.user
+  const {id,isAdmin} = req.user
 
-  if (!req.user.isAdmin) {
+  if (!isAdmin) {
     return next(errorHandler(403, "Can Not access to create post"));
   }
   if (!title || !content) {
