@@ -16,7 +16,7 @@ export const CreatePost = () => {
   const [imageuploadingProgress, setImageuplaodingProgress] = useState(null);
   const [imageUploadError, setimageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
-  console.log(formData);
+  const [publishError,setPublishError] = useState(null);
 
   const handleImageChange = () => {
     try {
@@ -37,7 +37,7 @@ export const CreatePost = () => {
         },
         (error) => {
           console.log(error);
-          setImageProgress(null);
+          setImageuplaodingProgress(null);
           setimageUploadError("Failed to upload the Image");
         },
         () => {
@@ -55,18 +55,78 @@ export const CreatePost = () => {
       setimageUploadError(error);
     }
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Check for empty content (handles HTML emptiness)
+    const isContentEmpty = !formData.content || 
+      formData.content.replace(/<(.|\n)*?>/g, '').trim() === '';
+  
+    if (!formData.title || !formData.category || isContentEmpty || !formData.imageUrl) {
+      setPublishError('Please fill in all required fields');
+      return;
+    }
+  
+    setPublishError(null);
+    try {
+      const res = await fetch("/api/post/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) setPublishError(data.message);
+    } catch (error) {
+      setPublishError(error.message || 'An error occurred.');
+    }
+  };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!formData.title || !formData.category || !formData.content ) {
+  //     setPublishError('Please fill in all required fields');
+  //     return;
+  //   }
+  //   setPublishError(null);
+  //   try {
+  //     const res = await fetch("/api/post/create", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+  //     const data = await res.json();
+
+  //     if (!res.ok) {
+  //       setPublishError(data.message);
+  //       return;
+  //     }
+  //   } catch (error) {
+  //     setPublishError(error.message || 'An error occurred while publishing. Please try again.');
+  //   }
+  // };
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen ">
       <h1 className="text-3xl text-center p-3">Create post</h1>
 
-      <form className="flex flex-col gap-4 ">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 ">
         <div className="flex flex-col gap-4 sm:flex-row justify-center ">
+
           <TextInput
             type="text"
             placeholder="Enter Your Title"
             className="flex-1"
+            id="title"
+            onChange={(e) =>
+              setFormData({ ...formData, [e.target.id]: e.target.value })
+            }
           />
-          <Select>
+          <Select
+            id="category"
+            onChange={(e) =>
+              setFormData({ ...formData, [e.target.id]: e.target.value })
+            }
+          >
             <option value="uncategorized">Select Category</option>
             <option value="javascript">Java Script</option>
             <option value="reactjs">React.js</option>
@@ -74,7 +134,7 @@ export const CreatePost = () => {
             <option value="expressjs">Express.js</option>
           </Select>
         </div>
-       
+
         <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dashed p-3">
           <FileInput
             type="file"
@@ -109,14 +169,21 @@ export const CreatePost = () => {
             )}
           </Button>
         </div>
-        {
-          formData.imageUrl && (
-            <img src={formData.imageUrl}   alt="upload Image" className="mb-8 object-cover h-72 w-full"/>
-          
-          )
-        }
+        {formData.imageUrl && (
+          <img
+            src={formData.imageUrl}
+            alt="upload Image"
+            className="mb-8 object-cover h-72 w-full"
+          />
+        )}
         {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
-        <ReactQuill required className="h-72 mb-12" theme="snow" />
+        <ReactQuill
+          id="description"
+          onChange={(value) => setFormData({ ...formData, content: value })}
+          required
+          className="h-72 mb-12"
+          theme="snow"
+        />
         <Button type="submit" gradientDuoTone="purpleToPink">
           Publish
         </Button>
