@@ -20,9 +20,10 @@ import {
   deleteSuccess,
   signOutSuccess,
 } from "../redux/user/userSlice";
+import { Link } from "react-router-dom";
 
 const DashProfile = () => {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser,error,loading} = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadingprogress, setimageFileUploadingprogress] =
@@ -30,7 +31,7 @@ const DashProfile = () => {
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const [formData, setFormData] = useState({});
   const [imageFileUploading100percent, setImageFileUploading100percent] =
-    useState(false);
+  useState(false);
   const [updateuserSuccess, setupdateuserSuccess] = useState(null);
   const [updateUserError, setupdateUserError] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -191,7 +192,7 @@ const DashProfile = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-3 w-full">
+    <div className="max-w-lg  mx-auto p-3 w-full">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
@@ -265,9 +266,16 @@ const DashProfile = () => {
           placeholder="password"
           onChange={handleChange}
         />
-        <Button type="submit" gradientDuoTone="purpleToBlue" outline>
-          Update
+        <Button type="submit" gradientDuoTone="purpleToBlue" disabled={ loading ||imageFileUploading100percent} outline>
+          {loading ?  'Loading.....' : 'update'}
         </Button>
+        {currentUser?.isAdmin && (
+          <Link to={'/create-post'} >
+          <Button gradientDuoTone="purpleToPink" className="w-full">
+            Create Post
+          </Button>
+          </Link>
+        )}
       </form>
 
       <div className="flex justify-between mt-5">
