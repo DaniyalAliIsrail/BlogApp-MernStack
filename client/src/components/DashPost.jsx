@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Table } from "flowbite-react";
+import { Modal, Table , Button } from "flowbite-react";
 import { Link } from "react-router-dom";
-
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 const DashPost = () => {
   const [getallPost, setgetallpost] = useState([]);
   const [showMore, setShowMore] = useState(true);
-  const [modal,setShowModal]=useState("")
+  const [openModal,setOpenModal]=useState("")
+  const [PostIdToDelete,setPostIdToDelete]=useState(null)
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -34,6 +35,7 @@ const DashPost = () => {
   }, [currentUser._id]);
 
   const handleShowMore = async () => {
+   
     const startIndex = getallPost.length;
     console.log(startIndex);
     try {
@@ -51,6 +53,52 @@ const DashPost = () => {
       }
     } catch (error) {
       console.log(error.message);
+    }
+  };
+  // const handleDeletePost = async ()=>{
+  //   setOpenModal(false)
+  //   console.log("postIdtoDelete", PostIdToDelete);
+  //   console.log("currentUser._id", currentUser._id);
+  //   try {
+  //     const res = await fetch(`http://localhost:4000/api/post/deletepost/${PostIdToDelete}/${currentUser._id}`, {
+  //       method: 'DELETE',
+  //     });
+      
+  //     const data = await res.json()
+  //     if(!res.ok){
+  //       console.log(data.message)
+  //     }else{
+  //       // const deltePost = getallPost.filter((post)=>post.id != PostIdToDelete)
+  //       // setgetallpost(deltePost)
+        
+  //       setgetallpost((prev)=>prev.filter((post)=> post._id != PostIdToDelete))
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
+  const handleDeletePost = async () => {
+    setOpenModal(false);
+    console.log("postIdtoDelete", PostIdToDelete);
+    console.log("currentUser._id", currentUser._id);
+    try {
+      //route paramter ka use keya gya hay
+      const res = await fetch(`/api/post/deletepost/${PostIdToDelete}/${currentUser._id}`, {
+        method: 'DELETE',
+        credentials: 'include', // Yeh line add karein - cookies ko include karne ke liye
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      
+      const data = await res.json();
+      if(!res.ok){
+        console.log(data.message);
+      } else {
+        setgetallpost((prev) => prev.filter((post) => post._id !== PostIdToDelete));
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
   return (
@@ -95,7 +143,7 @@ const DashPost = () => {
                   <Table.Cell>
                     <span
                       onClick={() => {
-                        setShowModal(true);
+                        setOpenModal(true);
                         setPostIdToDelete(post._id);
                       }}
                       className="font-medium text-red-500 hover:underline cursor-pointer"
@@ -127,6 +175,31 @@ const DashPost = () => {
       ) : (
         <p>You have no post yet</p>
       )}
+       <Modal
+        show={openModal}
+        size="md"
+        onClose={() => setOpenModal(false)}
+        popup
+        className="z-[200]"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete this post
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button onClick={handleDeletePost} color="failure">
+                Delete
+              </Button>
+              <Button onClick={() => setOpenModal(false)} color="gray">
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
