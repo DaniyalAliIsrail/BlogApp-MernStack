@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Modal, Table , Button } from "flowbite-react";
+import { Modal, Table , Button,Alert } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 const DashPost = () => {
@@ -8,6 +8,8 @@ const DashPost = () => {
   const [showMore, setShowMore] = useState(true);
   const [openModal,setOpenModal]=useState("")
   const [PostIdToDelete,setPostIdToDelete]=useState(null)
+  const [publishSuccess, setPublishSuccess] = useState(null);
+  
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -55,32 +57,11 @@ const DashPost = () => {
       console.log(error.message);
     }
   };
-  // const handleDeletePost = async ()=>{
-  //   setOpenModal(false)
-  //   console.log("postIdtoDelete", PostIdToDelete);
-  //   console.log("currentUser._id", currentUser._id);
-  //   try {
-  //     const res = await fetch(`http://localhost:4000/api/post/deletepost/${PostIdToDelete}/${currentUser._id}`, {
-  //       method: 'DELETE',
-  //     });
-      
-  //     const data = await res.json()
-  //     if(!res.ok){
-  //       console.log(data.message)
-  //     }else{
-  //       // const deltePost = getallPost.filter((post)=>post.id != PostIdToDelete)
-  //       // setgetallpost(deltePost)
-        
-  //       setgetallpost((prev)=>prev.filter((post)=> post._id != PostIdToDelete))
-  //     }
-  //   } catch (error) {
-  //     console.error(error)
-  //   }
-  // }
+ 
   const handleDeletePost = async () => {
     setOpenModal(false);
-    console.log("postIdtoDelete", PostIdToDelete);
-    console.log("currentUser._id", currentUser._id);
+    // console.log("postIdtoDelete", PostIdToDelete);
+    // console.log("currentUser._id", currentUser._id);
     try {
       //route paramter ka use keya gya hay
       const res = await fetch(`/api/post/deletepost/${PostIdToDelete}/${currentUser._id}`, {
@@ -96,6 +77,7 @@ const DashPost = () => {
         console.log(data.message);
       } else {
         setgetallpost((prev) => prev.filter((post) => post._id !== PostIdToDelete));
+        setPublishSuccess("Delete successfully");
       }
     } catch (error) {
       console.error(error);
@@ -154,7 +136,8 @@ const DashPost = () => {
                   <Table.Cell>
                     <Link
                       className="text-teal-500 hover:underline"
-                      to={`/update-post/${post._id}`}
+                      to={`/post-update/${post._id}`}
+                     
                     >
                       <span>Edit</span>
                     </Link>
@@ -200,6 +183,7 @@ const DashPost = () => {
           </div>
         </Modal.Body>
       </Modal>
+        {publishSuccess ?(<Alert color="success">{publishSuccess}</Alert>):null}
     </div>
   );
 };

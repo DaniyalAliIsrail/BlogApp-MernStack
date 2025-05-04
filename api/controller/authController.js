@@ -38,7 +38,7 @@ const signin = async (req, res, next) => {
     // Is approach se, jab aap database se user data fetch karte ho, tabhi password field ko exclude kar dete ho. Iske baad aapko manually password ko remove karne ki zaroorat nahi padti.
 
     const validUser = await User.findOne({ email });
-    console.log(validUser)
+    console.log("validUser_signin",validUser)
 
     if (!validUser) {
       return next(errorHandler(404, "user not found"));

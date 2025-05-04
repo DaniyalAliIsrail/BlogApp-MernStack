@@ -3,7 +3,7 @@ import errorHandler from "../utils/error.js";
 
 const create = async (req, res, next) => {
 
-  const { title, content, category, image } = req.body;
+  const { title, content, category } = req.body;
   const { id, isAdmin } = req.user;
 
   if (!isAdmin) {
@@ -22,7 +22,6 @@ const create = async (req, res, next) => {
     title,
     content,
     category,
-    image,
     slug,
     userId: id,
   });
@@ -75,6 +74,7 @@ const getPost = async (req,res,next) => {
     next(error);
   }
 };
+
 // const deletePost =async (req,res,next)=>{
 //   if(!req.user.isAdmin || req.user.id !== req.params.userId){
 //     return next(errorHandler(403,"You are not allowed to delete this post"))
@@ -87,6 +87,7 @@ const getPost = async (req,res,next) => {
 //     next(error)
 //   }
 // }
+
 const deletePost = async (req, res, next) => {
   try {
     // Fix parameter names to match URL structure
@@ -123,5 +124,63 @@ const deletePost = async (req, res, next) => {
     next(error);
   }
 };
+const updatePost = async(req,res,next)=>{
 
-export {create, getPost,deletePost};
+ if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+  return next(errorHandler(403, "You are not allowed to update this post"));
+}
+try {
+  const updatePost = await Post.findByIdAndUpdate(
+    req.params.postId,
+    {
+      $set:{
+        title: req.body.title,
+        content: req.body.content,
+        category: req.body.category,
+      }
+    },
+    { new: true }
+  );
+  res.status(200).json(updatePost);
+} catch (error) {
+  next(error); 
+}
+
+}
+// show all post of all user 
+const getALLPost = async (req, res, next) => {
+  try {
+    const posts = await Post.find({});
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Get All Posts API Error:", error);
+    next(error);
+  }
+}
+
+export {create, getPost,deletePost,updatePost,getALLPost};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

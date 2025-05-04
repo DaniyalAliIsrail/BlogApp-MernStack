@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 const OAuth = () => {
   const auth = getAuth(app);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -24,7 +25,7 @@ const OAuth = () => {
     });
     try {
       const resultsFromGoogle = await signInWithPopup(auth, provider);
-      console.log(resultsFromGoogle);
+      console.log(resultsFromGoogle.user.displayName);
       const res = await fetch("/api/auth/google", {
         method: "POST",
         headers: {
@@ -69,7 +70,7 @@ const OAuth = () => {
         Continue with Google
       </Button>
 
-      <Button
+      {/* <Button
         type="button"
         gradientDuoTone="greenToBlue"
         outline
@@ -77,7 +78,7 @@ const OAuth = () => {
       >
         <AiFillFacebook className="w-6 h-5 mr-2" />
         Continue with Facebook
-      </Button>
+      </Button> */}
     </>
   );
 };

@@ -9,3 +9,10 @@
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
 }
+.body{
+    height: 100vh;
+}
+
+.ql-editor{
+    font-size: 1.05rem;
+}

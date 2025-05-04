@@ -38,7 +38,7 @@ const Header = () => {
           // console.log("Signout Success")
         }
       } catch (error) {
-        console.log(error.message);
+        console.error(error);
       }
     };
 
@@ -117,14 +117,22 @@ const Header = () => {
         <Navbar.Link active={path === "/"} as={"div"}>
           <Link to="/">Home</Link>
         </Navbar.Link>
-
+        <Navbar.Link active={path === "/create-post"} as={"div"}>
+          <Link to="/create-post">Create Post</Link>
+        </Navbar.Link>
+        
+        <Navbar.Link active={path === "/dashboard"} as={"div"}>
+          <Link to="/dashboard">Dashboard</Link>
+        </Navbar.Link>
+        
         <Navbar.Link active={path === "/about"} as={"div"}>
           <Link to="/about">about</Link>
         </Navbar.Link>
+          {/* <Route path="/create-post" element={<CreatePost />} /> */}
 
-        <Navbar.Link active={path === "/project"} as={"div"}>
+        {/* <Navbar.Link active={path === "/project"} as={"div"}>
           <Link to="/project">projects</Link>
-        </Navbar.Link>
+        </Navbar.Link> */}
       </Navbar.Collapse>
     </Navbar>
   );
