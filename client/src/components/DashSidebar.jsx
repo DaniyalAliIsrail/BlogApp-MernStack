@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Sidebar } from "flowbite-react";
-import { HiArrowSmRight, HiDocumentText, HiUser } from "react-icons/hi";
+import { HiArrowSmRight, HiDocumentText, HiUser,HiOutlineUserGroup } from "react-icons/hi";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -10,7 +10,7 @@ const DashSidebar = () => {
   // hash: URL ka hash (e.g., #section1).
   // state: optional state jo navigation ke waqt pass ki ja sakti hai.
 
-  const {currentUser} = useSelector((state) => state.user)
+  const { currentUser } = useSelector((state) => state.user);
   const location = useLocation();
   const [tab, setTab] = useState("");
 
@@ -30,8 +30,8 @@ const DashSidebar = () => {
               <Sidebar.Item
                 active={tab === "profile"}
                 icon={HiUser}
-                // label={currentUser.isAdmin ? "Admin":"user"}
-                labelColor="dark" 
+                label={currentUser.isAdmin ? "Admin" : "user"}
+                labelColor="dark"
                 as="div"
               >
                 profile
@@ -40,11 +40,21 @@ const DashSidebar = () => {
 
             <Link to="/dashboard?tab=post">
               <Sidebar.Item
-              active={tab == "post"}
-              icon={HiDocumentText}
-              as="div"
+                active={tab == "post"}
+                icon={HiDocumentText}
+                as="div"
               >
                 post
+              </Sidebar.Item>
+            </Link>
+
+            <Link to="/dashboard?tab=users">
+              <Sidebar.Item
+                active={tab == "users"}
+                icon={HiOutlineUserGroup}
+                as="div"
+              >
+                users
               </Sidebar.Item>
             </Link>
 

@@ -1,0 +1,66 @@
+import { Button, Spinner } from "flowbite-react";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+const PostPageFullView = () => {
+  const { postSlug } = useParams();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  console.log("postData", post);
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        setLoading(true);
+        setError(false);
+        const res = await fetch(`/api/post/getpost?slug=${postSlug}`);
+        const data = await res.json();
+        setPost(data.posts[0]);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [postSlug]);
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner size="xl" />
+      </div>
+    );
+  }
+  return (
+    <main className="max-w-3xl mx-auto p-3 min-h-screen ">
+      <h1 className="text-3xl text-center font-serif max-w-2xl mx-auto p-3 lg:text-4xl">
+        {post?.title}
+      </h1>
+      <Link to={`/search?category=${post?.category}`}>
+        <Button color="gray" pill size={"xs"} className="mx-auto block my-2">
+          {post && post?.category}
+        </Button>
+      </Link>
+      <img
+        src={post && post?.image}
+        className="w-full object-cover max-h-[600px mt-5]"
+      />
+      {/* postdate and show how much time to read */}
+      <div className="flex justify-between items-center my-2 text-gray-500 border-b-2 border-gray-200 w-full">
+        <span>{post && new Date(post.createdAt).toLocaleDateString()}</span>
+        <span>
+          {post &&
+            (post.content.replace(/<[^>]*>/g, "").length / 1000).toFixed(
+              0
+            )}
+          mins read
+        </span>
+      </div>
+      <div className="pt-5 pb-4 post-content" dangerouslySetInnerHTML={{__html: post && post?.content}}>
+      </div>
+    </main>
+  );
+};
+
+export default PostPageFullView;

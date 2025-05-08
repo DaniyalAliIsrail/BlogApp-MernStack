@@ -16,8 +16,10 @@ export const CreatePost = () => {
   const [imageuploadingProgress, setImageuplaodingProgress] = useState(null);
   const [imageUploadError, setimageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
+  console.log(formData);
   const [publishError, setPublishError] = useState(null);
   const [publishSuccess, setPublishSuccess] = useState(null);
+
   const handleImageChange = () => {
     try {
       if (!file) {
@@ -42,10 +44,10 @@ export const CreatePost = () => {
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setFormData({ ...formData, image: downloadURL });
             console.log("File available at", downloadURL);
             setImageuplaodingProgress(null);
             setimageUploadError(null);
-            setFormData({ ...formData, imageUrl: downloadURL });
           });
         }
       );
@@ -66,8 +68,8 @@ export const CreatePost = () => {
     if (
       !formData.title ||
       !formData.category ||
-      isContentEmpty // ||
-      // !formData.imageUrl
+      isContentEmpty ||
+      !formData.image
     ) {
       setPublishError("Please fill in all required fields");
       return;
@@ -105,12 +107,14 @@ export const CreatePost = () => {
             onChange={(e) =>
               setFormData({ ...formData, [e.target.id]: e.target.value })
             }
+            value={formData.title || ""}
           />
           <Select
             id="category"
             onChange={(e) =>
               setFormData({ ...formData, [e.target.id]: e.target.value })
             }
+            value={formData.category || ""}
           >
             <option value="uncategorized">Select Category</option>
             <option value="javascript">Java Script</option>
@@ -120,7 +124,7 @@ export const CreatePost = () => {
           </Select>
         </div>
 
-        {/* <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dashed p-3">
+        <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dashed p-3">
           <FileInput
             type="file"
             accept="image/*"
@@ -153,15 +157,17 @@ export const CreatePost = () => {
               "Upload Image"
             )}
           </Button>
-        </div> */}
-        {formData.imageUrl && (
+        </div>
+        {formData.image && (
           <img
-            src={formData.imageUrl}
+            src={formData.image}
             alt="upload Image"
             className="mb-8 object-cover h-72 w-full"
+
           />
         )}
         {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
+
         <ReactQuill
           id="description"
           onChange={(value) => setFormData({ ...formData, content: value })}

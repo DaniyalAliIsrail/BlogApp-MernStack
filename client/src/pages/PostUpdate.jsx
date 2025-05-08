@@ -29,6 +29,9 @@ export const PostUpdate = () => {
   console.log("currentUser._id==>>",currentUser._id);
 
   useEffect(()=>{
+
+    // js ko post ko edit krna hay uska k id agya useparams k help say postId say and then us post ko fetch kra leya or us single post ka sara data formData state may rakh deya 
+    // or pht input filder us single k value rakh dey gye jaha update krna tha or phr us update 
     const fetchpost = async () => {
       try {
         const res = await fetch(`/api/post/getpost?postId=${postId}`);
@@ -40,6 +43,7 @@ export const PostUpdate = () => {
         }
         if(res.ok){
           setPublishError(null);
+          console.log(data.posts[0])
           setFormData(data.posts[0]);
         }
       } catch (error) {
