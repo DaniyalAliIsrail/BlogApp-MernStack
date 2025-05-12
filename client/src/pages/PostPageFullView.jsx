@@ -1,13 +1,15 @@
 import { Button, Spinner } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { CallToAction } from "../components/CallToAction";
+import CommentSection from "../components/CommentSection";
 
 const PostPageFullView = () => {
   const { postSlug } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
+  console.log(post);
   useEffect(() => {
     const abortController = new AbortController(); //kam ko roknay ka controller
     
@@ -51,6 +53,7 @@ const PostPageFullView = () => {
   if (!post) return null;
 
   return (
+    <>
     <main className="max-w-3xl mx-auto p-3 min-h-screen">
       <h1 className="text-3xl text-center font-serif max-w-2xl mx-auto p-3 lg:text-4xl">
         {post?.title}
@@ -80,6 +83,13 @@ const PostPageFullView = () => {
         dangerouslySetInnerHTML={{__html: post.content}}
       />
     </main>
+    <div className="max-w-4xl mx-auto mb-4 px-3">
+    <CallToAction />
+    <CommentSection postId={post._id} />
+    </div>
+    <div>
+    </div>
+    </>
   );
 };
 
