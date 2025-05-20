@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import userRoutes from './routes/userRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 import postRoutes from './routes/post.Routes.js'
+import commentRoutes from './routes/comment.Routes.js'
+
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -24,6 +26,8 @@ app.use('/api/user',userRoutes)
 app.use('/api/auth',authRoutes)
 // post create routes
 app.use('/api/post',postRoutes)
+//comment routes
+app.use('/api/comment',commentRoutes)
 
 // error handling middleware
 app.use((err,req,res,next)=>{
