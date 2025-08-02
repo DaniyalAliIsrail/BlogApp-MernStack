@@ -8,7 +8,7 @@ import {
   Navbar,
   TextInput,
 } from "flowbite-react";
-import React from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
@@ -16,32 +16,49 @@ import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/theme/themeSlice";
 import { signOutSuccess } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
+
 const Header = () => {
   const path = useLocation().pathname;
+  const location = useLocation();
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
-  const dispatch = useDispatch()
-  // console.log(currentUser.profilePicture);
+  const [searchTerm, setSearchTerm] = useState("");
+  console.log(searchTerm);
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-   const handleSignOut = async () => {
-      try {
-        const res = await fetch("/api/user/signout", {
-          method: "POST",
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          console.log(data.message);
-        } else {
-          dispatch(signOutSuccess());
-          navigate("/signin");
-          // console.log("Signout Success")
-        }
-      } catch (error) {
-        console.error(error);
+  useEffect(() => {
+    const params = new URLSearchParams(location.search); //  mujhy url k value dey ga query k bd k "?searchTerm=Ali
+    const serarchTermFromUrl = params.get("searchTerm"); // query k valye ko get kry ga "ali" ajae ga
+    if (serarchTermFromUrl) {
+      setSearchTerm(serarchTermFromUrl);
+    }
+  }, [location.search]);
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signOutSuccess());
+        navigate("/signin");
+        // console.log("Signout Success")
       }
-    };
-
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParms = new URLSearchParams(location.search);
+    urlParms.set("searchTerm", searchTerm);
+    const searchQuery = urlParms.toString(); // ye obj ko string formate may krdeta eg: query string searchTerm = "Ali"
+    navigate(`/search?${searchQuery}`);
+  };
   return (
     <Navbar className="border-b-2">
       <Link
@@ -54,11 +71,13 @@ const Header = () => {
         {/* <img src="../" /> */}
       </Link>
 
-      <form>
+      <form onSubmit={handleSubmit}>
         <TextInput
           type="text"
           placeholder="serach.."
           rightIcon={AiOutlineSearch}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          value={searchTerm}
           className="hidden lg:inline"
         />
       </form>
@@ -120,15 +139,15 @@ const Header = () => {
         <Navbar.Link active={path === "/create-post"} as={"div"}>
           <Link to="/create-post">Create Post</Link>
         </Navbar.Link>
-        
+
         <Navbar.Link active={path === "/dashboard"} as={"div"}>
           <Link to="/dashboard">Dashboard</Link>
         </Navbar.Link>
-        
+
         <Navbar.Link active={path === "/about"} as={"div"}>
           <Link to="/about">about</Link>
         </Navbar.Link>
-          {/* <Route path="/create-post" element={<CreatePost />} /> */}
+        {/* <Route path="/create-post" element={<CreatePost />} /> */}
 
         {/* <Navbar.Link active={path === "/project"} as={"div"}>
           <Link to="/project">projects</Link>

@@ -4,6 +4,8 @@ import DashSidebar from "../components/DashSidebar";
 import DashPost from "../components/DashPost";
 import DashProfile from "../components/DashProfile";
 import DashUser from "../components/DashUser";
+import { DashComment } from "../components/DashComment";
+import { DashComponent } from "../components/DashComponent";
 
 const Dashboard = () => {
   const location = useLocation();
@@ -13,8 +15,8 @@ const Dashboard = () => {
     const urlParams = new URLSearchParams(location.search); //url k query parameter ko nklnay may help krta hay ye
     console.log(urlParams);
     const tabFromUrl = urlParams.get("tab"); //tab kay andr ? kay bad k value hogy
-    if(tabFromUrl){
-      setTab(tabFromUrl); 
+    if (tabFromUrl) {
+      setTab(tabFromUrl);
     }
     console.log(tabFromUrl);
   }, [location.search]);
@@ -23,18 +25,14 @@ const Dashboard = () => {
     <div className="min-h-screen flex flex-col md:flex-row">
       <div className="md:w-56">
         {/* sidebar */}
-        <DashSidebar/>
+        <DashSidebar />
       </div>
       {/* Profile */}
-      {
-        tab === "profile" && <DashProfile/>
-      }
-      {
-        tab === "post" && <DashPost/>
-      }
-      {
-        tab === "users" && <DashUser/>
-      }
+      {tab === "profile" && <DashProfile />}
+      {tab === "post" && <DashPost />}
+      {tab === "users" && <DashUser />}
+      {tab === "comments" && <DashComment/>}
+      {tab === "dash" && <DashComponent/> }
     </div>
   );
 };

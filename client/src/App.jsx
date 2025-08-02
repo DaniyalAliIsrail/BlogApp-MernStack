@@ -13,6 +13,8 @@ import { CreatePost } from "./pages/CreatePost";
 import { PostUpdate } from "./pages/PostUpdate";
 import PostPageFullView from "./pages/PostPageFullView";
 import { ScrollToTop } from "./components/ScrollToTop";
+// import { Search } from "./components/Search";
+import Search from "./components/Search";
 
 function App() {
   return (
@@ -23,18 +25,23 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
+
           <Route element={<OnlyAdminPrivateRoute />}>
             <Route path="/create-post" element={<CreatePost />} />
             <Route path="/post-update/:postId" element={<PostUpdate />} />
           </Route>
+
           <Route path="/project" element={<Projects />} />
           <Route path="/post/:postSlug" element={<PostPageFullView/>} />
 
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
+          <Route path="/search" element={<Search />} />
+
         </Routes>
         <Myfooter />
       </BrowserRouter>

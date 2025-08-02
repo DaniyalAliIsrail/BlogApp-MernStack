@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Sidebar } from "flowbite-react";
-import { HiArrowSmRight, HiDocumentText, HiUser,HiOutlineUserGroup } from "react-icons/hi";
+import {
+  HiArrowSmRight,
+  HiDocumentText,
+  HiUser,
+  HiOutlineUserGroup,
+} from "react-icons/hi";
+import { LiaCommentSolid } from "react-icons/lia";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { MdDashboard } from "react-icons/md";
 
 const DashSidebar = () => {
   // pathname: current URL ka path (e.g., /home).
@@ -55,6 +62,22 @@ const DashSidebar = () => {
                 as="div"
               >
                 users
+              </Sidebar.Item>
+            </Link>
+
+            <Link to="/dashboard?tab=comments">
+              <Sidebar.Item
+                active={tab == "comments"}
+                icon={LiaCommentSolid}
+                as="div"
+              >
+                comments
+              </Sidebar.Item>
+            </Link>
+
+            <Link to="/dashboard?tab=dash">
+              <Sidebar.Item active={tab == "dash"} icon={MdDashboard} as="div">
+                Dashboard
               </Sidebar.Item>
             </Link>
 

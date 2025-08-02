@@ -10,8 +10,7 @@ export const UserComments = ({ comment, onLike, onEdit, onDelete }) => {
   const { currentUser } = useSelector((state) => state.user);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
-  const [userdetailswithComments_userId, setuserdetailswithComments_userId] =
-    useState();
+  const [userdetailswithComments_userId, setuserdetailswithComments_userId] = useState();
 
   useEffect(() => {
     const getuser = async () => {
