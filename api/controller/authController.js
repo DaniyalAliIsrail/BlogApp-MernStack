@@ -38,7 +38,7 @@ const signin = async (req, res, next) => {
     // Is approach se, jab aap database se user data fetch karte ho, tabhi password field ko exclude kar dete ho. Iske baad aapko manually password ko remove karne ki zaroorat nahi padti.
 
     const validUser = await User.findOne({ email });
-    console.log("validUser_signin",validUser)
+    console.log("validUser_signin", validUser);
 
     if (!validUser) {
       return next(errorHandler(404, "user not found"));
@@ -48,7 +48,10 @@ const signin = async (req, res, next) => {
       return next(errorHandler(400, "Invalid password"));
     }
 
-    const token = jwt.sign({ id: validUser._id , isAdmin: validUser.isAdmin }, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { id: validUser._id, isAdmin: validUser.isAdmin },
+      process.env.JWT_SECRET
+    );
     const { password: pass, ...userWithoutPassword } = validUser._doc;
     res
       .status(200)
@@ -63,12 +66,19 @@ const signin = async (req, res, next) => {
 
 const google = async (req, res, next) => {
   const { name, email, googlePhotoUrl } = req.body;
-
+  if (!name || !email || !googlePhotoUrl) {
+    return res
+      .status(400)
+      .json({ message: "Missing required Google user info." });
+  }
   try {
     const user = await User.findOne({ email });
     if (user) {
       console.log("run ifffffff part");
-      const token = jwt.sign({ id: user._id , isAdmin: user.isAdmin }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET
+      );
       const { password, ...userWithoutPassword } = user._doc; // Corrected
       res
         .status(200)
@@ -92,7 +102,10 @@ const google = async (req, res, next) => {
         profilePicture: googlePhotoUrl,
       });
       await newUser.save();
-      const token = jwt.sign({ id: newUser._id, isAdmin: newUser.isAdmin}, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { id: newUser._id, isAdmin: newUser.isAdmin },
+        process.env.JWT_SECRET
+      );
       const { password, ...userWithoutPassword } = newUser._doc;
       res
         .status(200)

@@ -11,12 +11,21 @@ import "react-quill/dist/quill.snow.css";
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+
+// Define initial form state with empty strings
+const initialFormData = {
+  title: "",
+  category: "",
+  image: "",
+  content: "",
+};
+
 export const CreatePost = () => {
+  const [quillKey, setQuillKey] = useState(0);
   const [file, setFile] = useState(null);
   const [imageuploadingProgress, setImageuplaodingProgress] = useState(null);
   const [imageUploadError, setimageUploadError] = useState(null);
-  const [formData, setFormData] = useState({});
-  console.log(formData);
+  const [formData, setFormData] = useState(initialFormData);
   const [publishError, setPublishError] = useState(null);
   const [publishSuccess, setPublishSuccess] = useState(null);
 
@@ -38,25 +47,23 @@ export const CreatePost = () => {
           setImageuplaodingProgress(progress.toFixed(0));
         },
         (error) => {
-          console.log(error);
           setImageuplaodingProgress(null);
           setimageUploadError("Failed to upload the Image");
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setFormData({ ...formData, image: downloadURL });
-            console.log("File available at", downloadURL);
+            setFormData((prev) => ({ ...prev, image: downloadURL }));
             setImageuplaodingProgress(null);
             setimageUploadError(null);
           });
         }
       );
     } catch (error) {
-      console.log(error);
-      setImageProgress(null);
-      setimageUploadError(error);
+      setImageuplaodingProgress(null);
+      setimageUploadError(error.message || "Image upload error");
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -68,6 +75,7 @@ export const CreatePost = () => {
     if (
       !formData.title ||
       !formData.category ||
+      formData.category === "uncategorized" ||
       isContentEmpty ||
       !formData.image
     ) {
@@ -84,15 +92,17 @@ export const CreatePost = () => {
       });
       const data = await res.json();
       if (!res.ok) setPublishError(data.message);
-      else{
+      else {
         setPublishSuccess("Post published successfully!");
-        setFormData({}); // Clear form if you want
+        setFormData(initialFormData); // Reset all fields
+        setFile(null);
+        setQuillKey((prev) => prev + 1); // Reset ReactQuill
       }
     } catch (error) {
       setPublishError(error.message || "An error occurred.");
     }
   };
- 
+
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen ">
       <h1 className="text-3xl text-center p-3">Create post</h1>
@@ -105,16 +115,22 @@ export const CreatePost = () => {
             className="flex-1"
             id="title"
             onChange={(e) =>
-              setFormData({ ...formData, [e.target.id]: e.target.value })
+              setFormData((prev) => ({
+                ...prev,
+                [e.target.id]: e.target.value,
+              }))
             }
-            value={formData.title || ""}
+            value={formData.title}
           />
           <Select
             id="category"
             onChange={(e) =>
-              setFormData({ ...formData, [e.target.id]: e.target.value })
+              setFormData((prev) => ({
+                ...prev,
+                [e.target.id]: e.target.value,
+              }))
             }
-            value={formData.category || ""}
+            value={formData.category}
           >
             <option value="uncategorized">Select Category</option>
             <option value="javascript">Java Script</option>
@@ -130,6 +146,7 @@ export const CreatePost = () => {
             accept="image/*"
             onChange={(e) => setFile(e.target.files[0])}
             className="sm:flex-1"
+            value={file ? undefined : ""}
           />
 
           <Button
@@ -163,14 +180,17 @@ export const CreatePost = () => {
             src={formData.image}
             alt="upload Image"
             className="mb-8 object-cover h-72 w-full"
-
           />
         )}
         {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
 
         <ReactQuill
+          key={quillKey}
           id="description"
-          onChange={(value) => setFormData({ ...formData, content: value })}
+          value={formData.content}
+          onChange={(value) =>
+            setFormData((prev) => ({ ...prev, content: value }))
+          }
           required
           className="h-72 mb-12"
           theme="snow"
@@ -178,10 +198,10 @@ export const CreatePost = () => {
         <Button type="submit" gradientDuoTone="purpleToPink">
           Publish
         </Button>
-        {publishSuccess ?(<Alert color="success">{publishSuccess}</Alert>):null}
-        {
-          publishError && <Alert color="failure">{publishError}</Alert>
-        }
+        {publishSuccess ? (
+          <Alert color="success">{publishSuccess}</Alert>
+        ) : null}
+        {publishError && <Alert color="failure">{publishError}</Alert>}
       </form>
     </div>
   );

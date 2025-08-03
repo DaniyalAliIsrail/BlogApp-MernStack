@@ -1,15 +1,19 @@
-    import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
+import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import React, { useState } from "react";
-import { Link, useNavigate, } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
 
 const Signup = () => {
-  const [formData, setFormData] = useState({ username: "", email: "", password: "" });
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  console.log(loading);
-  
-  const navigate = useNavigate()
+  // console.log(loading);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -35,21 +39,20 @@ const Signup = () => {
       const data = await res.json();
       console.log(data);
       setLoading(false);
-      
+
       if (data.success === false) {
         return setErrorMessage(data.message);
       }
-      
-      setErrorMessage(null); 
+
+      setErrorMessage(null);
       setFormData({ username: "", email: "", password: "" }); // Clear input fields
-      if(res.ok){
-        navigate('/signin')
+      if (res.ok) {
+        navigate("/signin");
       }
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
       setFormData({ username: "", email: "", password: "" }); // Clear input fields
-
     }
   };
 
@@ -110,13 +113,13 @@ const Signup = () => {
               {loading ? (
                 <>
                   <Spinner size="sm" />
-                  <span className="pl-3" > loading... </span>
+                  <span className="pl-3"> loading... </span>
                 </>
               ) : (
                 "Sign Up"
               )}
             </Button>
-            <OAuth/>
+            <OAuth />
           </form>
           <div className="flex gap-1 text-sm mt-5">
             <span>Have an account?</span>
